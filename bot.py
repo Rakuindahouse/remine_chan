@@ -205,13 +205,11 @@ class CancelView(discord.ui.View):
 
 @client.tree.command(name="remind", description="リマインドを設定します（例: 明日PRを出す　来週ミーティング準備 14:00）")
 @app_commands.describe(
-    text="タスク内容（日付キーワードを含めてね。例: 明日PRを出す / 今週中にデプロイ）",
-    time="時刻を別途指定したいときだけ入力（HH:MM 形式）",
+    text="タスク内容（日付・時刻も一緒に書いてね。例: 明日PRを出す / 来週ミーティング準備 14:00）",
 )
 async def cmd_remind(
     interaction: discord.Interaction,
     text: str,
-    time: Optional[str] = None,
 ) -> None:
     default_time = await storage.get_default_time(interaction.guild.id)
 
@@ -224,8 +222,7 @@ async def cmd_remind(
         )
         return
 
-    # time引数 → テキスト内の時刻 → デフォルト時刻 の優先順
-    time_str = time or detector.extract_time_from_text(text) or default_time
+    time_str = detector.extract_time_from_text(text) or default_time
     remind_at = datetime.combine(
         target_date,
         datetime.strptime(time_str, "%H:%M").time(),
