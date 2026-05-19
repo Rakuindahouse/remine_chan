@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: discord-reminder-bot
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python bot.py
+    envVars:
+      - key: DISCORD_TOKEN
+        sync: false  # Renderのダッシュボードで手動入力
