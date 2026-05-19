@@ -14,6 +14,7 @@ async def _get_pool() -> asyncpg.Pool:
         _pool = await asyncpg.create_pool(
             os.getenv("DATABASE_URL"),
             ssl="require",
+            statement_cache_size=0,
         )
     return _pool
 
