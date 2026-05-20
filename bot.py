@@ -234,25 +234,31 @@ async def cmd_remind(
         )
         return
 
+    # 先にメッセージを送信してリンクを確定させる
+    await interaction.response.send_message(
+        f"✨ リマインドをセットしたよ！\n"
+        f"📋 **{text}**\n"
+        f"🗓 `{remind_at.strftime('%Y年%m月%d日 %H:%M')}` に通知するね",
+    )
+    msg = await interaction.original_response()
     message_link = (
-        f"https://discord.com/channels/{interaction.guild.id}/{interaction.channel.id}"
+        f"https://discord.com/channels/{interaction.guild.id}/{interaction.channel.id}/{msg.id}"
     )
 
     reminder_id = await storage.add_reminder(
         guild_id=interaction.guild.id,
         user_id=interaction.user.id,
-        message_id=None,
+        message_id=msg.id,
         message_link=message_link,
         task_description=text,
         remind_at=remind_at,
     )
 
-    await interaction.response.send_message(
-        f"✨ リマインドをセットしたよ！\n"
-        f"📋 **{text}**\n"
-        f"🗓 `{remind_at.strftime('%Y年%m月%d日 %H:%M')}` に通知するね\n"
-        f"🔖 ID: `{reminder_id}`　キャンセルは `/cancel`",
-        ephemeral=True,
+    await msg.edit(
+        content=f"✨ リマインドをセットしたよ！\n"
+                f"📋 **{text}**\n"
+                f"🗓 `{remind_at.strftime('%Y年%m月%d日 %H:%M')}` に通知するね\n"
+                f"🔖 ID: `{reminder_id}`　キャンセルは `/cancel`",
     )
 
 
