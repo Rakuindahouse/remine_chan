@@ -87,7 +87,13 @@ class ReminderBot(discord.Client):
         now = datetime.now()
         due = await storage.get_due_reminders(now)
         for r in due:
-            await self._dispatch_reminder(r)
+            try:
+                await self._dispatch_reminder(r)
+                await asyncio.sleep(2)
+            except discord.HTTPException as e:
+                log.error("Rate limit or HTTP error on reminder #%s: %s", r["id"], e)
+            except Exception as e:
+                log.error("Unexpected error on reminder #%s: %s", r["id"], e)
 
     @check_reminders.before_loop
     async def _before_check(self) -> None:
