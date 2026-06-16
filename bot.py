@@ -358,6 +358,13 @@ async def _set_default_time_error(
         await interaction.response.send_message(
             "❌ チャンネル管理権限が必要です。", ephemeral=True
         )
+    else:
+        log.error("Error in /setdefaulttime: %s", error, exc_info=error)
+        msg = "❌ エラーが発生しました。もう一度試してみてね！"
+        if interaction.response.is_done():
+            await interaction.followup.send(msg, ephemeral=True)
+        else:
+            await interaction.response.send_message(msg, ephemeral=True)
 
 
 @client.tree.command(
@@ -435,6 +442,13 @@ async def _set_channel_error(
         await interaction.response.send_message(
             "❌ チャンネル管理権限が必要です。", ephemeral=True
         )
+    else:
+        log.error("Error in /setreminderchannel: %s", error, exc_info=error)
+        msg = "❌ エラーが発生しました。もう一度試してみてね！"
+        if interaction.response.is_done():
+            await interaction.followup.send(msg, ephemeral=True)
+        else:
+            await interaction.response.send_message(msg, ephemeral=True)
 
 
 # ---------- Keep-alive Web server (Render 無料枠のスリープ対策) ----------
