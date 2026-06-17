@@ -459,8 +459,17 @@ async def main() -> None:
     if not token:
         raise RuntimeError("DISCORD_TOKEN が .env に設定されていません。")
     await _start_web_server()
-    async with client:
-        await client.start(token)
+    try:
+        async with client:
+            await client.start(token)
+    except discord.LoginFailure:
+        log.error("Invalid token. Exiting.")
+        raise
+    except discord.HTTPException as e:
+        if e.status == 429:
+            log.error("Discord API rate limited (429). Waiting 120s before exit to avoid restart storm...")
+            await asyncio.sleep(120)
+        raise
 
 if __name__ == "__main__":
     asyncio.run(main())
